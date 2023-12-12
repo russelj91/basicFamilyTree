@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <title>Document</title>
+  </head>
+  <style>
+    /*Now the CSS*/
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    .tree ul {
+      padding-top: 20px;
+      position: relative;
+      transition: all 0.5s;
+      -webkit-transition: all 0.5s;
+      -moz-transition: all 0.5s;
+    }
+
+    .tree li {
+      float: left;
+      text-align: center;
+      list-style-type: none;
+      position: relative;
+      padding: 20px 5px 0 5px;
+
+      transition: all 0.5s;
+      -webkit-transition: all 0.5s;
+      -moz-transition: all 0.5s;
+    }
+
+    /*We will use ::before and ::after to draw the connectors*/
+
+    .tree li::before,
+    .tree li::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 50%;
+      border-top: 1px solid #ccc;
+      width: 50%;
+      height: 20px;
+    }
+    .tree li::after {
+      right: auto;
+      left: 50%;
+      border-left: 1px solid #ccc;
+    }
+
+    /*We need to remove left-right connectors from elements without 
+any siblings*/
+    .tree li:only-child::after,
+    .tree li:only-child::before {
+      display: none;
+    }
+
+    /*Remove space from the top of single children*/
+    .tree li:only-child {
+      padding-top: 0;
+    }
+
+    /*Remove left connector from first child and 
+right connector from last child*/
+    .tree li:first-child::before,
+    .tree li:last-child::after {
+      border: 0 none;
+    }
+    /*Adding back the vertical connector to the last nodes*/
+    .tree li:last-child::before {
+      border-right: 1px solid #ccc;
+      border-radius: 0 5px 0 0;
+      -webkit-border-radius: 0 5px 0 0;
+      -moz-border-radius: 0 5px 0 0;
+    }
+    .tree li:first-child::after {
+      border-radius: 5px 0 0 0;
+      -webkit-border-radius: 5px 0 0 0;
+      -moz-border-radius: 5px 0 0 0;
+    }
+
+    /*Time to add downward connectors from parents*/
+    .tree ul ul::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      border-left: 1px solid #ccc;
+      width: 0;
+      height: 20px;
+    }
+
+    .tree li a {
+      /* border: 1px solid #ccc; */
+      padding: 5px 10px;
+      text-decoration: none;
+      color: #666;
+      font-family: arial, verdana, tahoma;
+      font-size: 11px;
+      display: inline-block;
+
+      border-radius: 5px;
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+
+      transition: all 0.5s;
+      -webkit-transition: all 0.5s;
+      -moz-transition: all 0.5s;
+    }
+
+    span, p{
+      font-size: 11px;
+    }
+    /*Time for some hover effects*/
+    /*We will apply the hover effect the the lineage of the element also*/
+    .tree li a:hover,
+    .tree li a:hover + ul li a {
+      background: #c8e4f8;
+      color: #000;
+      border: 1px solid #94a0b4;
+    }
+    /*Connector styles on hover*/
+    .tree li a:hover + ul li::after,
+    .tree li a:hover + ul li::before,
+    .tree li a:hover + ul::before,
+    .tree li a:hover + ul ul::before {
+      border-color: #94a0b4;
+    }
+    .anak,
+    .anak1 {
+      display: none;
+    }
+
+    .heart-img {
+      width: 20px;
+    }
+
+  
+    .mycontainer {
+        width: 100%;
+        margin: 0 auto;
+        display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    
+      text-align: center;
+}
+
+
+    .anak-1 {
+      display: none;
+    }
+
+  
+    .card-container{
+        display: flex;
+        justify-content: center;
+        align-self: center;
+    }
+
+    .tree img{
+        width: 50px;
+    }
+
+    /* .first-anak{
+      border: solid 2px rebeccapurple;
+    } */
+    /*Thats all. I hope you enjoyed it.
+Thanks :)*/
+
+.naminyo{
+  border: solid 1px rgb(29, 194, 29);
+}
+.married{
+  border: solid 1px #0d6efd;
+}
+
+
+  </style>
+  <body>
+    <div class="container py-5 d-flex justify-content-center" >
+      <div class="row">
+        <div class="d-flex gap-1 justify-content-between">
+          <span class="bg-primary px-lg-5 rounded fw-bold">Married to</span>
+          <span class="bg-success px-lg-5 rounded fw-bold">Children</span>
+          <span class="bg-warning px-lg-5 rounded fw-bold">Apo - <span class="text-light">Married to</span> </span>
+          <span class="bg-info px-lg-5 rounded fw-bold">Apo sa tuhod</span>
+          <span class="bg-secondary px-lg-5 rounded fw-bold text-light">Apo sa Kumagko</span>
+        </div>
+      </div>
+    </div>
+    <div class="mycontainer" id="content" >
+  
+      <div class="tree" >
+        <ul>
+          <li>
+            <a href="#"><div class="container mt-4">
+                <div class="row">
+                    <div class="col">
+                        <div class="card" style="width: 18rem;">
+                            <img src="assets/img/profile.png" class="card-img-top  mx-auto img-fluid py-2" alt="Image Alt Text">
+                            <div class="card-body">
+                                <span class="card-title">Francisca</span>
+                                <p class="card-text">Year</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col">
+                        <div class="card" style="width: 18rem;">
+                            <img src="assets/img/profile.png" class="card-img-top  mx-auto img-fluid py-2" alt="Image Alt Text">
+                            <div class="card-body">
+                                <span class="card-title">Arsenio</span>
+                                <p class="card-text">Year</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              
+            </div></a>
+        
+            <ul>
+              <li>
+                <a href="#" class="my-btn first-btn">
+                  <div class="row">
+                    <div class="col">
+                        <div class="card married" style="width: 5rem;">
+                            <img src="assets/img/profile.png" class="card-img-top  mx-auto img-fluid py-2" alt="Image Alt Text">
+                            <div class="card-body ">
+                                <span class="card-title">Merlinda</span>
+                                <p class="card-text">Year</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card naminyo" style="width: 5rem;">
+                            <img src="assets/img/profile.png" class="card-img-top  mx-auto img-fluid py-2" alt="Image Alt Text">
+                            <div class="card-body">
+                                <span class="card-title ">Romeo</span>
+                                <p class="card-text">Year</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </a>
+                <ul class="anak fw-bold">
+                  <li>
+                    <a href="#" class="my-btn-1 bg-warning">Veronica<br /><span class="text-white">Arthur</span></a>
+                    <ul class="anak-1">
+                      <li >
+                        <a href="#" class="bg-info rounded">Great Grand Child</a>
+                      </li>
+                      <li>
+                        <a href="#" class="bg-info rounded">Great Grand Child</a>
+                      </li>
+                      <li>
+                        <a href="#" class="bg-info rounded">Great Grand Child</a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <a href="#" class="my-btn-1 bg-warning  ">Ann<br /> <span class="text-light">Roland</span></a>
+                    <ul class="anak-1">
+                      <li>
+                        <a href="#" class="bg-info rounded">Eden</a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li >
+                    <a href="#" class="my-btn-1 bg-warning rounded">Romelyn<br /> <span class="text-light">Jose Joy</span></a>
+                    <ul class="anak-1">
+                      <li>
+                        <a href="#" class="bg-info rounded">Great Grand Child</a>
+                      </li>
+                      <li>
+                        <a href="#" class="bg-info rounded">Great Grand Child</a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <a href="#" class="my-btn-1 bg-warning rounded">Romeo Jr.<br /> <span class="text-light">Honey</span></a>
+                    <ul class="anak-1">
+                      <li>
+                        <a href="#" class="bg-info rounded">Reyn Hanna</a>
+                      </li>
+                      <li>
+                        <a href="#" class="bg-info rounded">Thirdy</a>
+                      </li>
+                      <li>
+                        <a href="#"  class="bg-info rounded" >Arky</a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <a href="#" class="bg-warning rounded">Mary Ann</a>
+                  </li>
+                  <li>
+                    <a href="#" class="my-btn-1 bg-warning rounded">Roy<br /> <span class="text-light">Tata</span></a>
+                    <ul class="anak-1">
+                      <li>
+                        <a href="#" class="bg-info rounded">Desiree</a>
+                      </li>
+                      <li>
+                        <a href="#" class="bg-info rounded">Daniel</a>
+                      </li>
+                      <li>
+                        <a href="#" class="bg-info rounded">David</a>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <div class="second-btn">
+                  <a href="#" class="my-btn">
+                    <div class="row">
+                        <div class="col">
+                            <div class="card naminyo" style="width: 5rem;">
+                                <img src="assets/img/profile.png" class="card-img-top  mx-auto img-fluid py-2" alt="Image Alt Text">
+                                <div class="card-body">
+                                    <span class="card-title">Erlinda</span>
+                                    <p class="card-text">Year</p>
+                                </div>
+                            </div>
+                        </div>
+                    
+                    </div>
+                </a>
+                </div>
+              </li>
+              <li>
+                
+             
+                <a href="#" class="my-btn third-btn">
+                  <div class="row">
+                    <div class="col">
+                        <div class="card married" style="width: 5rem;">
+                            <img src="assets/img/profile.png" class="card-img-top  mx-auto img-fluid py-2" alt="Image Alt Text">
+                            <div class="card-body">
+                                <span class="card-title">Dionesio</span>
+                                <p class="card-text">Year</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card naminyo" style="width: 5rem;">
+                            <img src="assets/img/profile.png" class="card-img-top  mx-auto img-fluid py-2" alt="Image Alt Text">
+                            <div class="card-body">
+                                <span class="card-title">Teresita</span>
+                                <p class="card-text">Year</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </a>
+               
+               
+                <ul class="anak">
+                  <li>
+                    <a href="#" class="my-btn-1 bg-warning rounded">Maritess<br /> <span class="text-light">Norberto</span></a>
+                    <ul class="anak-1">
+                      <li>
+                        <a href="#" class="bg-info rounded">Dave</a>
+                      </li>
+                      <li>
+                        <a href="#" class="bg-info rounded">Japhet</a>
+                      </li>
+                      <li>
+                        <a href="#" class="bg-info rounded">Norbert</a>
+                      </li>
+                      <li>
+                        <a href="#" class="bg-info rounded">Jay Jay</a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <a href="#" class="my-btn-1 bg-warning rounded">Joseph<br /> <span class="text-light">Joemarie</span></a>
+                    <ul class="anak-1">
+                      <li>
+                        <a href="#" class="bg-info rounded">Mary Therese</a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <a href="#" class="my-btn-1 bg-warning rounded">Rey<br /> <span class="text-light">Sharon</span></a>
+                    <ul class="anak-1">
+                      <li>
+                        <a href="#" class="my-btn-1 bg-info rounded">Sharisse<br />Wowie</a>
+                        <ul class="anak-2">
+                            <li>
+                              <a href="#" class="bg-secondary text-light">Sevy</a>
+                            </li>
+                         
+                          </ul>
+                      </li>
+                      <li>
+                        <a href="#" class="bg-info rounded">Ciara</a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <a href="#" class="my-btn-1 bg-warning rounded">Rhuel<br /> <span class="text-light">Merna</span></a>
+                    <ul class="anak-1">
+                      <li>
+                        <a href="#" class="bg-info rounded">Devine</a>
+                      </li>
+                      <li>
+                        <a href="#" class="bg-info rounded">Mariel</a>
+                      </li>
+                      <li>
+                        <a href="#" class="bg-info rounded">Rona</a>
+                      </li>
+                      <li>
+                        <a href="#" class="bg-info rounded">Nonong</a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <a href="#" class="my-btn-1 bg-warning rounded">Arsenio<br /> <span class="text-light">Marisol</span></a>
+                    <ul class="anak-1">
+                      <li>
+                        <a href="#" class="bg-info rounded">Xyla</a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <a href="#" class="bg-warning rounded">Julius</a>
+                  </li>
+                  <li>
+                    <a href="#" class="my-btn-1 bg-warning rounded">Glenn<br /> <span class="text-light">Joan</span></a>
+                    <ul class="anak-1">
+                      <li>
+                        <a href="#" class="bg-info rounded">Daniel</a>
+                      </li>
+                      <li>
+                        <a href="#" class="bg-info rounded">Zeki</a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <a href="#" class="bg-warning rounded">Ellaine</a>
+                  </li>
+                  <li>
+                    <a href="#" class="my-btn-1 bg-warning rounded">Larrah Mae<br /> <span class="text-light">Allan</span></a>
+                    <ul class="anak-1">
+                      <li>
+                        <a href="#" class="bg-info rounded">Tristan</a>
+                      </li>
+                      <li>
+                        <a href="#" class="bg-info rounded">Terrence</a>
+                      </li>
+                      <li>
+                        <a href="#" class="bg-info rounded">Insoy</a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <a href="#" class="my-btn-1 bg-warning">Denn Bryan<br /> <span class="text-light">Ivy</span></a>
+                    <ul class="anak-1">
+                      <li>
+                        <a href="#" class="bg-info rounded">Diday</a>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <a href="#" class="my-btn fourth-btn">
+                  <div class="row">
+                    <div class="col">
+                        <div class="card married" style="width: 5rem;">
+                            <img src="assets/img/profile.png" class="card-img-top  mx-auto img-fluid py-2" alt="Image Alt Text">
+                            <div class="card-body">
+                                <span class="card-title">Julieta</span>
+                                <p class="card-text">Year</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card naminyo" style="width: 5rem;">
+                            <img src="assets/img/profile.png" class="card-img-top  mx-auto img-fluid py-2" alt="Image Alt Text">
+                            <div class="card-body">
+                                <span class="card-title">Mario</span>
+                                <p class="card-text">Year</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </a>
+                <ul class="anak">
+                    <li>
+                        <a href="#" class="my-btn-1 bg-warning rounded">Junmar<br /> <span class="text-light">Ann</span></a>
+                        <ul class="anak-1">
+                          <li>
+                            <a href="#" class="bg-info rounded">Jayden</a>
+                          </li>
+                          <li>
+                            <a href="#" class="bg-info rounded">Keith</a>
+                          </li>
+                          <li>
+                            <a href="#" class="bg-info rounded">Dwayne</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li><a href="#" class="bg-warning rounded">Nicky</a></li>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <a href="#" class="my-btn fifth-btn">
+                    <div class="row">
+                        <div class="col">
+                            <div class="card married" style="width: 5rem;">
+                                <img src="assets/img/profile.png" class="card-img-top  mx-auto img-fluid py-2" alt="Image Alt Text">
+                                <div class="card-body">
+                                    <span class="card-title">Ronnie</span>
+                                    <p class="card-text">Year</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card naminyo" style="width: 5rem;">
+                                <img src="assets/img/profile.png" class="card-img-top  mx-auto img-fluid py-2" alt="Image Alt Text">
+                                <div class="card-body">
+                                    <span class="card-title">Elina</span>
+                                    <p class="card-text">Year</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <ul class="anak">
+                  <li>
+                    <a href="#" class="bg-warning rounded">Novelyn</a>
+                  </li>
+                  <li>
+                    <a href="#" class="my-btn-1 bg-warning rounded">Jowelyn<br /> <span class="text-light">William</span></a>
+                    <ul class="anak-1">
+                      <li>
+                        <a href="#" class="bg-info rounded">Liam</a>
+                      </li>
+                      <li>
+                        <a href="#" class="bg-info rounded">Will</a>
+                      </li>
+                      <li>
+                        <a href="#" class="bg-info rounded">...</a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <a href="#" class="my-btn-1 bg-warning rounded">Joeffrey<br /> <span class="text-light">Jessebelle</span></a>
+                    <ul class="anak-1">
+                      <li>
+                        <a href="#" class="bg-info rounded ">Julio</a>
+                      </li>
+                      <li>
+                        <a href="#" class="bg-info rounded ">Julia</a>
+                      </li>
+                     
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <a href="#" class="my-btn six-btn">
+                    <div class="row">
+                        <div class="col">
+                            <div class="card married" style="width: 5rem;">
+                                <img src="assets/img/profile.png" class="card-img-top  mx-auto img-fluid py-2" alt="Image Alt Text">
+                                <div class="card-body">
+                                    <span class="card-title">George</span>
+                                    <p class="card-text">Year</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card naminyo" style="width: 5rem;">
+                                <img src="assets/img/profile.png" class="card-img-top  mx-auto img-fluid py-2" alt="Image Alt Text">
+                                <div class="card-body">
+                                    <span class="card-title">Lucia</span>
+                                    <p class="card-text">Year</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <ul class="anak">
+                    <li>
+                        <a href="#" class="my-btn-1 bg-warning rounded">Luigi</a>
+                        <ul class="anak-1">
+                          <li>
+                            <a href="#" class="bg-info rounded">JX</a>
+                          </li>
+                          <li>
+                            <a href="#" class="bg-info rounded">Rayleigh</a>
+                          </li>
+                         
+                        </ul>
+                      </li>
+                </ul>
+              </li>
+              <li>
+                <a href="#" class="my-btn seventh-btn">
+                  <div class="row">
+                    <div class="col">
+                        <div class="card married" style="width: 5rem;">
+                            <img src="assets/img/profile.png" class="card-img-top  mx-auto img-fluid py-2" alt="Image Alt Text">
+                            <div class="card-body">
+                                <span class="card-title">Merlinda</span>
+                                <p class="card-text">Year</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card naminyo" style="width: 5rem;">
+                            <img src="assets/img/profile.png" class="card-img-top  mx-auto img-fluid py-2" alt="Image Alt Text">
+                            <div class="card-body">
+                                <span class="card-title">Eduardo</span>
+                                <p class="card-text">Year</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </a>
+                <ul class="anak">
+                  <li>
+                    <a href="#" class="my-btn-1 bg-warning rounded">Marigold</a>
+               
+                  </li>
+                  <li>
+                    <a href="#" class="my-btn-1 bg-warning rounded">Marc Edward</a>
+                   
+                  </li>
+              
+                  <li>
+                    <a href="#" class="my-btn-1 bg-warning rounded">Eduardo Jr.<br /> <span class="bg-light">Kizha</span></a>
+             
+                  </li>
+                  <li>
+                    <a href="#" class="my-btn-1 bg-warning rounded">Kareen<br /> <span class="text-light">Russel</span></a>
+                    <ul class="anak-1">
+                      <li>
+                        <a href="#" class="bg-info rounded">Kai</a>
+                      </li>                 
+                    </ul>
+                  </li>
+                  <li>
+                    <a href="#" class="my-btn-1 bg-warning rounded">Francis<br /> <span class="text-light">Mhelody</span></a>
+                    <ul class="anak-1">
+                      <li>
+                        <a href="#" class="bg-info rounded">Cian</a>
+                      </li>                 
+                    </ul>
+                  </li>
+              
+                </ul>
+                
+              </li>
+              <li>
+                <a href="#" class="my-btn eight-btn">
+                    <div class="row">
+                        <div class="col">
+                            <div class="card married" style="width: 5rem;">
+                                <img src="assets/img/profile.png" class="card-img-top  mx-auto img-fluid py-2" alt="Image Alt Text">
+                                <div class="card-body">
+                                    <span class="card-title">Biatriz</span>
+                                    <p class="card-text">Year</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card naminyo" style="width: 5rem;">
+                                <img src="assets/img/profile.png" class="card-img-top  mx-auto img-fluid py-2" alt="Image Alt Text">
+                                <div class="card-body">
+                                    <span class="card-title">Victor</span>
+                                    <p class="card-text">Year</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <ul class="anak">
+                  <li>
+                    <a href="#" class="my-btn-1 bg-warning rounded">Shiela Mae<br /> <span class="text-light">JM</span></a>
+                 
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <a href="#" class="my-btn ninth-btn">
+                    <div class="row">
+                        <div class="col">
+                            <div class="card married" style="width: 5rem;">
+                                <img src="assets/img/profile.png" class="card-img-top  mx-auto img-fluid py-2" alt="Image Alt Text">
+                                <div class="card-body">
+                                    <span class="card-title">Bebeng</span>
+                                    <p class="card-text">Year</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card naminyo" style="width: 5rem;">
+                                <img src="assets/img/profile.png" class="card-img-top  mx-auto img-fluid py-2" alt="Image Alt Text">
+                                <div class="card-body">
+                                    <span class="card-title">Alberto</span>
+                                    <p class="card-text">Year</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <ul class="anak">
+                    <li>
+                        <a href="#" class="my-btn-1 bg-warning rounded">Jefferson<br /> <span class="text-light">Unknown</span></a>
+                        <ul class="anak-1">
+                          <li>
+                            <a href="#" class="bg-info rounded">Kent</a>
+                          </li>
+                          <li>
+                            <a href="#" class="bg-info rounded">Reyna</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li>
+                        <a href="#" class="my-btn-1 bg-warning rounded">Jennibeth<br /> <span class="text-light">George</span></a>
+                        <ul class="anak-1">
+                          <li>
+                            <a href="#" class="bg-info rounded">Princess Janine</a>
+                          </li>
+                          <li>
+                            <a href="#" class="bg-info rounded">Prince Johan</a>
+                          </li>
+                        </ul>
+                      </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="container-fluid ">
+        <div class="row">
+            <div class="col output">
+           
+            </div>
+        </div>
+    </div>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"
+    ></script>
+    <script src="script.js"></script>
+    <script>
+      // Select all buttons with the common class "my-btn"
+      const buttons = document.querySelectorAll(".my-btn");
+
+      // Loop through the buttons and add an event listener to each
+      buttons.forEach((button) => {
+        button.addEventListener("click", function () {
+          // Hide all content sections first
+          const allAnak = document.querySelectorAll(".anak");
+          allAnak.forEach((anak) => {
+            anak.style.display = "none";
+          });
+
+          // Find the corresponding "anak" element for the clicked button
+          const anak = button.nextElementSibling;
+
+          // Show the content section associated with the clicked button
+          anak.style.display = "block";
+        });
+      });
+
+      // Select all buttons with the common class "my-btn-1"
+      const buttonsKareenRussel = document.querySelectorAll(".my-btn-1");
+
+      // Loop through the buttons and add an event listener to each
+      buttonsKareenRussel.forEach((button) => {
+        button.addEventListener("click", function (e) {
+          e.preventDefault();
+
+          // Toggle the display of the corresponding "anak-1" container
+          const containerKai = button.nextElementSibling;
+          containerKai.style.display =
+            containerKai.style.display === "none" ? "block" : "none";
+        });
+      });
+
+      const firstBtn = document.querySelector('.first-btn');
+const buttonsToToggle = document.querySelectorAll('.second-btn, .third-btn, .fourth-btn, .fifth-btn, .six-btn, .seventh-btn, .eight-btn, .ninth-btn');
+
+
+let buttonsHidden = true; // Initialize as hidden
+
+firstBtn.addEventListener('click', function() {
+  buttonsToToggle.forEach(button => {
+    button.style.display = buttonsHidden ? 'none' : 'block';
+  });
+
+
+  buttonsHidden = !buttonsHidden; // Toggle the state
+});
+
+
+
+      const thirdBtn = document.querySelector('.third-btn');
+      const buttonsToToggle1 = document.querySelectorAll('.first-btn, .second-btn, .fourth-btn, .fifth-btn, .six-btn, .seventh-btn, .eight-btn, .ninth-btn');
+
+
+      let buttonsHidden1 = true; // Initialize as hidden
+
+      
+      thirdBtn.addEventListener('click', function(){
+        buttonsToToggle1.forEach(button => {
+          button.style.display = buttonsHidden1 ? 'none' : 'block';
+        });
+
+        buttonsHidden1 = !buttonsHidden1; // Toggle the state
+      });
+
+
+      const fourthBtn = document.querySelector('.fourth-btn');
+      const buttonsToToggle2 = document.querySelectorAll('.first-btn, .second-btn, .third-btn, .fifth-btn, .six-btn, .seventh-btn, .eight-btn, .ninth-btn');
+
+      
+
+
+      let buttonsHidden2 = true; // Initialize as hidden
+
+      
+      fourthBtn.addEventListener('click', function(){
+        buttonsToToggle2.forEach(button => {
+          button.style.display = buttonsHidden2 ? 'none' : 'block';
+        });
+
+        buttonsHidden2 = !buttonsHidden2; // Toggle the state
+      });
+
+      // ----- //
+
+      
+      const fifthBtn = document.querySelector('.fifth-btn');
+      const buttonsToToggle3 = document.querySelectorAll('.first-btn, .second-btn, .third-btn, .fourth-btn, .six-btn, .seventh-btn, .eight-btn, .ninth-btn');
+
+      
+
+
+      let buttonsHidden3 = true; // Initialize as hidden
+
+      
+      fifthBtn.addEventListener('click', function(){
+        buttonsToToggle3.forEach(button => {
+          button.style.display = buttonsHidden3 ? 'none' : 'block';
+        });
+
+        buttonsHidden3 = !buttonsHidden3; // Toggle the state
+      });
+
+
+         // ----- //
+
+             
+      const sixBtn = document.querySelector('.six-btn');
+      const buttonsToToggle4 = document.querySelectorAll('.first-btn, .second-btn, .third-btn, .fourth-btn, .fifth-btn, .seventh-btn, .eight-btn, .ninth-btn');
+
+      
+
+
+      let buttonsHidden4 = true; // Initialize as hidden
+
+      
+      sixBtn.addEventListener('click', function(){
+        buttonsToToggle4.forEach(button => {
+          button.style.display = buttonsHidden4 ? 'none' : 'block';
+        });
+
+        buttonsHidden4 = !buttonsHidden4; // Toggle the state
+      });
+
+      // ----- //
+
+
+      const seventhBtn = document.querySelector('.seventh-btn');
+      const buttonsToToggle5 = document.querySelectorAll('.first-btn, .second-btn, .third-btn, .fourth-btn, .fifth-btn, .six-btn, .eight-btn, .ninth-btn');
+
+      
+
+
+      let buttonsHidden5 = true; // Initialize as hidden
+
+      
+      seventhBtn.addEventListener('click', function(){
+        buttonsToToggle5.forEach(button => {
+          button.style.display = buttonsHidden5 ? 'none' : 'block';
+        });
+
+        buttonsHidden5 = !buttonsHidden5; // Toggle the state
+      });
+
+       // ----- //
+
+       
+      const eightBtn = document.querySelector('.eight-btn');
+      const buttonsToToggle6 = document.querySelectorAll('.first-btn, .second-btn, .third-btn, .fourth-btn, .fifth-btn, .six-btn, .seventh-btn, .ninth-btn');
+
+      
+
+
+      let buttonsHidden6 = true; // Initialize as hidden
+
+      
+      eightBtn.addEventListener('click', function(){
+        buttonsToToggle6.forEach(button => {
+          button.style.display = buttonsHidden6 ? 'none' : 'block';
+        });
+
+        buttonsHidden6 = !buttonsHidden6; // Toggle the state
+      });
+
+       // ----- //
+
+       const ninth = document.querySelector('.ninth-btn');
+      const buttonsToToggle7 = document.querySelectorAll('.first-btn, .second-btn, .third-btn, .fourth-btn, .fifth-btn, .six-btn, .seventh-btn, .eight-btn');
+
+      
+
+
+      let buttonsHidden7 = true; // Initialize as hidden
+
+      
+      ninth.addEventListener('click', function(){
+        buttonsToToggle7.forEach(button => {
+          button.style.display = buttonsHidden7 ? 'none' : 'block';
+        });
+
+        buttonsHidden7 = !buttonsHidden7; // Toggle the state
+      });
+    </script>
+  </body>
+</html>
