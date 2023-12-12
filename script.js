@@ -1,14 +1,14 @@
 
-// window.onload = function() {
-//   var password = prompt("Enter the password:");
+window.onload = function() {
+  var password = prompt("Enter the password:");
 
   
-//   if (password !== null && password === 'bolambotFamily') {
+  if (password !== null && password === 'bolambot2024') {
     
    
-//   } else {
+  } else {
   
-//     alert('Incorrect password. Access denied.');
-//     window.location.href = 'https://google.com'; 
-//   }
-// }
+    alert('Incorrect password. Access denied.');
+    window.location.href = 'https://google.com'; 
+  }
+}
